@@ -1,7 +1,4 @@
-#!/usr/bin/rdmd
-
 import std.stdio;
-import std.process;
 
 class ScriptTemplate
 {
@@ -11,7 +8,9 @@ class ScriptTemplate
     string[] descriptions;
     
     this(string programName)
-    {this.programName = programName;}
+    {
+        this.programName = programName;
+    }
     
     void addOption(string name, string description)
     {
@@ -29,57 +28,36 @@ class ScriptTemplate
         }
     }
 
+    bool parseArguments(string[] args)
+    {
+
+        foreach(arg; args[0 .. $])
+        {
+            if (arg=="-help")
+            {
+                printUsage();
+                return 0;
+            }
+        }
+
+        foreach(arg; args[0 .. $])
+        {
+            switch (arg)
+            {
+                case "-test","--test":
+                    //test=true;
+                    break;
+                default:
+                    writeln("Argument ",arg," not found");
+                    printUsage();
+                    return 0;
+            }
+        }
+        return 1;
+
+    }
+
+
+
 }
 
-void main(string[] args)
-{
-
-    auto script = new ScriptTemplate(args[0]);
-
-    script.addOption("test","Run Make and test running");
-    script.addOption("help","This help message");
-    
-    bool test = false;
-
-    foreach(arg; args[1 .. $])
-    {
-        if (arg=="-help")
-        {
-            script.printUsage();
-            return;
-        }
-    }
-
-    foreach(arg; args[1 .. $])
-    {
-        switch (arg)
-        {
-            case "-test","--test":
-                test=true;
-                break;
-            default:
-                writeln("Argument not found");
-                script.printUsage();
-                return;
-        }
-    }
-    
-    writeln("Configuring local git settings.");
-    system("cp -f .gitconfig .git/config");
-    
-    if (test)
-    {
-        writeln("Make all libraries in release mode.");
-        system("./etc/makeAllLibs.sh");
-        system("./etc/makeDocs.sh");
-        writeln("Run camflow in release mode.");
-        int runTest = system("./etc/runCamflow.sh");
-        if (runTest)
-        {
-            writeln("Running CamFlow failed.");
-            return;
-        }
-        writeln("Install Successful.");
-    }
-    
-}
