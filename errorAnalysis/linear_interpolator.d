@@ -12,8 +12,8 @@ class LinearInterpolator(X, Y)
 private:
 
     //! The data to use for interpolation
-    double[double] mData;
-    double[] sortedKey;
+    X[Y] mData;
+    X[] sortedKey;
 
 public:
 
