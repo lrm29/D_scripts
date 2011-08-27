@@ -1,0 +1,12 @@
+Run as follows:
+
+./error.d 20.dat 10.dat
+
+Or compile and run:
+
+dmd error.d linear_interpolator.d -unittest
+./error 20.dat 10.dat
+
+The two arguments are:
+1) "Exact" Solution
+2) Solution to calculate residual for.

@@ -24,17 +24,19 @@ int main(string[] args)
     
     auto Zindex = countUntil(exactHeader,"Z");
     auto Tindex = countUntil(exactHeader,args[3]);     
+
     double exactZ[];
     double Z[];
     double exactT[]; 
     double T[];
-        
+    
     foreach (line; exactSolution[2 .. $-1])
     {
         string results[] = split(line);
         exactZ ~= to!(double)(results[Zindex]);
         exactT ~= to!(double)(results[Tindex]);
     }
+    
     foreach (line; solution[2 .. $-1])
     {
         string results[] = split(line);
@@ -43,21 +45,19 @@ int main(string[] args)
     }    
     
     // Now interpolate the exact solution onto the solution grid.
-    auto liT = new LinearInterpolator!(double,double)(exactZ,exactT);
+    auto li = new LinearInterpolator!(double,double)(exactZ,exactT);
     
     double mapExactT[];
     foreach (elem; Z)
-    {
-        mapExactT ~= liT.interpolate(elem);
-    }
+        mapExactT ~= li.interpolate(elem);
     
-    double sumOfSquaresT = 0;
+    double sumOfSquares = 0;
     foreach (i, elem; mapExactT)
-        sumOfSquaresT += pow((elem-T[i])/elem,2);
-        
-    double residualT = sqrt((1.0/Z.length)*sumOfSquaresT);
+        sumOfSquares += pow(elem-T[i],2);
     
-    writeln(Z.length," ",1.0/(Z.length)," ",residualT);
+    double residual = sqrt(sumOfSquares);
+    writeln("T residual = ",residual);
+    
     return 0;
 
 }
